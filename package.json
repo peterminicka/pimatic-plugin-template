@@ -1,4 +1,5 @@
-{ "name": "pimatic-solvisremote",
+{
+  "name": "pimatic-solvisremote",
   "description": "Reading SolvisRemote and showing values in pimatic",
   "author": "Peter Minicka <peter.minicka@gmail.com>",
   "main": "pimatic-solvisremote",
@@ -8,7 +9,7 @@
     "device-config-schema.coffee",
     "readme.md"
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "http://github.com/peterminicka/pimatic-solvisremote",
   "private": false,
   "repository": {
@@ -17,6 +18,8 @@
   },
   "configSchema": "pimatic-solvisremote-config-schema.coffee",
   "dependencies": {
+    "bluebird": "~2.10.2",
+    "request": "*"
   },
   "peerDependencies": {
     "pimatic": "0.9.*"
