@@ -24,8 +24,8 @@ module.exports = (env) ->
       @pass = @config.pass
       @interval = 1000 * @config.interval
       
-      # Attribute/Get Temperaturfühler S1 - S15
-      for i in [1...16]
+      # Attribute/Get Temperaturfühler S1 - S16
+      for i in [1...17]
         if @config['s' + i]?
           @addAttribute('s' + i, {
             description: "S" + i,
@@ -58,8 +58,40 @@ module.exports = (env) ->
         })
         @getS18 = () => Promise.resolve(@s18)
 
+      # Attribute/Get AnalogIn AI1 - AI3
+      for i in [1...4]
+        if @config['ai' + i]?
+          @addAttribute('ai' + i, {
+            description: "AI" + i,
+            label: @config['ai' + i].label
+            acronym: "AI" + i
+            type: types.number
+            unit: " °C"
+          })
+          @['getAi' + i] = () => Promise.resolve(@['ai' + i])
+
+      # Attribute/Get AnalogOut P1 - P5 + Status
+      for i in [1...6]
+        if @config['p' + i]?
+          @addAttribute('p' + i, {
+            description: "P" + i,
+            label: @config['p' + i].label
+            acronym: "P" + i
+            type: types.number
+            unit: " °C"
+          })
+          @['getP' + i] = () => Promise.resolve(@['p' + i])
+        if @config['p' + i + '_state']?
+          @addAttribute('p' + i + '_state', {
+            description: "P" + i + '_state',
+            label: @config['p' + i + '_state'].label
+            acronym: "P" + i
+            type: "boolean"
+          })
+          @['getP' + i + '_state'] = () => Promise.resolve(@['p' + i + '_state'])
+
       # Attribute/Get Raumfühler R1 - R3
-      for i in [1...3]
+      for i in [1...4]
         if @config['rf' + i]?
           @addAttribute('r' + i, {
             description: "RF" + i,
@@ -71,7 +103,7 @@ module.exports = (env) ->
           @['getRf' + i] = () => Promise.resolve(@['rf' + i])
 
       # Attribute/Get Ausgänge A1 - A14 + Status
-      for i in [1...14]
+      for i in [1...15]
         if @config['a' + i]?
           @addAttribute('a' + i, {
             description: "A" + i,
@@ -160,7 +192,7 @@ module.exports = (env) ->
     _requestData: () =>
       @_fetchData "http://" + @ip + "/sc2_val.xml", (string) =>
         # parse string and decode
-        for i in [1...64]
+        for i in [1...65]
           # Temps
           if i < 17
             value = hex2dec(string,4)
@@ -195,19 +227,28 @@ module.exports = (env) ->
           if i >= 19 && i <= 21
             value = hex2dec(string,4)
             string = string.substr(4)
-            if @config['a_in' + (i - 18)]?
-              @['a_in' + (i - 18)] = value
-              @emit "a_in" + (i - 18), value
-              env.logger.debug("a_in" + (i - 18) + ": " + value)
+            if @config['ai' + (i - 18)]?
+              @['ai' + (i - 18)] = value
+              @emit "ai" + (i - 18), value
+              env.logger.debug("ai" + (i - 18) + ": " + value)
 
           # AnalogOut
           if i >= 22 && i <= 25
             value = hex2dec(string,2)
             string = string.substr(2)
-            if @config['a_out' + (i - 21)]?
-              @['a_out' + (i - 21)] = value
-              @emit "a_out" + (i - 21), value
-              env.logger.debug("a_out" + (i - 21) + ": " + value)
+            if @config['p' + (i - 21)]?
+              @['p' + (i - 21)] = value
+              @emit "p" + (i - 21), value
+              env.logger.debug("p" + (i - 21) + ": " + value)
+            if @config['p' + (i - 21) + '_state']?
+              if value > 0
+                @['p' + (i - 21) + '_state'] = true
+                @emit "p" + (i - 21) + "_state", true
+                env.logger.debug("p" + (i - 21) + "_state: true")
+              else
+                @['p' + (i - 21) + '_state'] = false
+                @emit "p" + (i - 21) + "_state", false
+                env.logger.debug("p" + (i - 21) + "_state: false")
 
           # Raumfühler
           if i >= 26 && i <= 28
@@ -241,18 +282,43 @@ module.exports = (env) ->
  
         # Werte überspringen
         string = string.substr(16)
+
         # Solarertrag
         value = hex2dec(string,4)
         string = string.substr(4)
-        @se = value
-        @emit "se", value
+        if @config.se?
+          @se = value
+          @emit "se", value
+
         # Werte überspringen
-        string = string.substr(30)
+        string = string.substr(10)
+
+        # AnalogOut5 P5
+        value = hex2dec(string,2)
+        string = string.substr(2)
+        if @config.p5?
+          @p5 = value
+          @emit "p5", value
+          env.logger.debug("p5: " + value)
+        if @config.p5_state?
+          if value > 0
+            @p5_state = true
+            @emit "p5_state", true
+            env.logger.debug("p5_state: true")
+          else
+            @p5_state = false
+            @emit "p5_state", false
+            env.logger.debug("p5_state: false")
+
+        # Werte überspringen
+        string = string.substr(18)
+
         # Solarleistung
         value = hex2dec(string,4)
         string = string.substr(4)
-        @sl = value
-        @emit "sl", value
+        if @config.sl?
+          @sl = value
+          @emit "sl", value
 
   solvisremote = new SolvisRemote
   return solvisremote

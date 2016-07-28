@@ -93,6 +93,58 @@ module.exports = {
         description: "S18 - Label"
         label: String
         required: false
+      ai1:
+        description: "AnalogIn1 - Label"
+        label: String
+        required: false
+      ai2:
+        description: "AnalogIn2 - Label"
+        label: String
+        required: false
+      ai3:
+        description: "AnalogIn3 - Label"
+        label: String
+        required: false
+      p1:
+        description: "AnalogOut1 - Label"
+        label: String
+        required: false
+      p2:
+        description: "AnalogOut2 - Label"
+        label: String
+        required: false
+      p3:
+        description: "AnalogOut3 - Label"
+        label: String
+        required: false
+      p4:
+        description: "AnalogOut4 - Label"
+        label: String
+        required: false
+      p5:
+        description: "AnalogOut5 - Label"
+        label: String
+        required: false
+      p1_state:
+        description: "AnalogOut1_State - Label"
+        label: String
+        required: false
+      p2_state:
+        description: "AnalogOut2_State - Label"
+        label: String
+        required: false
+      p3_state:
+        description: "AnalogOut3_State - Label"
+        label: String
+        required: false
+      p4_state:
+        description: "AnalogOut4_State - Label"
+        label: String
+        required: false
+      p5_state:
+        description: "AnalogOut5_State - Label"
+        label: String
+        required: false
       rf1:
         description: "RF1 - Label"
         label: String

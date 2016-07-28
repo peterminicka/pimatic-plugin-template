@@ -9,7 +9,7 @@
     "device-config-schema.coffee",
     "readme.md"
   ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "http://github.com/peterminicka/pimatic-solvisremote",
   "private": false,
   "repository": {
