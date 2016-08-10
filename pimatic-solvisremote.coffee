@@ -1,5 +1,8 @@
 # #Plugin pimatic-solvisremote
 
+capitalizeFirstLetter = (string) =>
+    return string.charAt(0).toUpperCase() + string.slice(1)
+
 module.exports = (env) ->
 
   Promise = env.require 'bluebird'
@@ -23,7 +26,12 @@ module.exports = (env) ->
       @user = @config.user
       @pass = @config.pass
       @interval = 1000 * @config.interval
-      
+     
+      # thx hongkongkiwi
+      addGetter = (attributeName) =>
+        @['_' + attributeName] = 0
+        @['get' + (capitalizeFirstLetter attributeName)] = () => Promise.resolve(@[attributeName])
+
       # Attribute/Get Temperaturfühler S1 - S16
       for i in [1...17]
         if @config['s' + i]?
@@ -32,10 +40,10 @@ module.exports = (env) ->
             label: @config['s' + i].label
             acronym: "S" + i
             type: types.number
-            unit: " °C"
+            unit: "°C"
           })
-          @['getS' + i] = () => Promise.resolve(@['s' + i])
- 
+          addGetter "s" + i
+
       # Attribute/Get Druchfluss l/h S17
       if @config.s17?
         @addAttribute('s17', {
@@ -43,9 +51,9 @@ module.exports = (env) ->
           label: @config.s17.label
           acronym: "S17"
           type: types.number
-          unit: " l/h"
+          unit: "l/h"
         })
-        @getS17 = () => Promise.resolve(@s17)
+        addGetter "s17"
 
       # Attribute/Get Druchfluss l/m S18
       if @config.s18?
@@ -54,9 +62,9 @@ module.exports = (env) ->
           label: @config.s18.label
           acronym: "S18"
           type: types.number
-          unit: " l/m"
+          unit: "l/m"
         })
-        @getS18 = () => Promise.resolve(@s18)
+        addGetter "s18"
 
       # Attribute/Get AnalogIn AI1 - AI3
       for i in [1...4]
@@ -66,9 +74,9 @@ module.exports = (env) ->
             label: @config['ai' + i].label
             acronym: "AI" + i
             type: types.number
-            unit: " °C"
+            unit: "°C"
           })
-          @['getAi' + i] = () => Promise.resolve(@['ai' + i])
+          addGetter "ai" + i
 
       # Attribute/Get AnalogOut P1 - P5 + Status
       for i in [1...6]
@@ -78,9 +86,9 @@ module.exports = (env) ->
             label: @config['p' + i].label
             acronym: "P" + i
             type: types.number
-            unit: " °C"
+            unit: "°C"
           })
-          @['getP' + i] = () => Promise.resolve(@['p' + i])
+          addGetter "p" + i
         if @config['p' + i + '_state']?
           @addAttribute('p' + i + '_state', {
             description: "P" + i + '_state',
@@ -88,7 +96,7 @@ module.exports = (env) ->
             acronym: "P" + i
             type: "boolean"
           })
-          @['getP' + i + '_state'] = () => Promise.resolve(@['p' + i + '_state'])
+          addGetter "p" + i + "_state"
 
       # Attribute/Get Raumfühler R1 - R3
       for i in [1...4]
@@ -98,9 +106,9 @@ module.exports = (env) ->
             label: @config['rf' + i].label
             acronym: "RF" + i
             type: types.number
-            unit: " °C"
+            unit: "°C"
           })
-          @['getRf' + i] = () => Promise.resolve(@['rf' + i])
+          addGetter "rf" + i
 
       # Attribute/Get Ausgänge A1 - A14 + Status
       for i in [1...15]
@@ -110,9 +118,9 @@ module.exports = (env) ->
             label: @config['a' + i].label
             acronym: "A" + i
             type: types.number
-            unit: " °C"
+            unit: "°C"
           })
-          @['getA' + i] = () => Promise.resolve(@['a' + i])
+          addGetter "a" + i
         if @config['a' + i + '_state']?
           @addAttribute('a' + i + '_state', {
             description: "A" + i + '_state',
@@ -120,7 +128,7 @@ module.exports = (env) ->
             acronym: "A" + i
             type: "boolean"
           })
-          @['getA' + i + '_state'] = () => Promise.resolve(@['a' + i + '_state'])
+          addGetter "a" + i + "_state"
 
 
       # Attribute/Get Solarertrag SE
@@ -130,9 +138,9 @@ module.exports = (env) ->
           label: @config.se.label
           acronym: "SE"
           type: types.number
-          unit: " kWh"
+          unit: "kWh"
         })
-        @getSe = () => Promise.resolve(@se)
+        addGetter "se"
 
       # Attribute/Get Solarleistung SL
       if @config.sl?
@@ -141,9 +149,9 @@ module.exports = (env) ->
           label: @config.sl.label
           acronym: "SL"
           type: types.number
-          unit: " kW"
+          unit: "kW"
         })
-        @getSl = () => Promise.resolve(@sl)
+        addGetter "sl"
  
       super()
 
@@ -203,7 +211,7 @@ module.exports = (env) ->
               value = (value/10)
               @['s' + i] = value
               @emit "s" + i, value
-              env.logger.debug("s" + i + ": " + value + " °C")
+              env.logger.debug("s" + i + ": " + value + "°C")
 
           # Durchfluss l/m
           if i == 17
@@ -212,7 +220,7 @@ module.exports = (env) ->
             if @config.s18?
               @s18 = (value/10)
               @emit "s18", (value/10)
-              env.logger.debug("s18: " + (value/10) + " l/m")
+              env.logger.debug("s18: " + (value/10) + "l/m")
 
           # Durchfluss l/h
           if i == 18
@@ -221,7 +229,7 @@ module.exports = (env) ->
             if @config.s17?
               @s17 = value
               @emit "s17", value
-              env.logger.debug("s17: " + value + " l/h")
+              env.logger.debug("s17: " + value + "l/h")
 
           # AnalogIn
           if i >= 19 && i <= 21
@@ -260,7 +268,7 @@ module.exports = (env) ->
               value = (value/10)
               @['r' + (i - 25)] = value
               @emit "r" + (i - 25), value
-              env.logger.debug("rf" + (i - 25) + ": " + value + " °C")
+              env.logger.debug("rf" + (i - 25) + ": " + value + "°C")
 
           # Outputs
           if i >= 29 && i <= 42
