@@ -121,3 +121,27 @@ Here is an full example of a SolvisMax 6 with gas and solarpanels
         "label": "Nachheizung"
       }
     }
+
+# Useful tipps, I think ;-)
+
+## Rules
+
+It's possible to write own alarm rules like sending a mail if solar buffer is full. It looks like:
+
+    {
+      "id": "alarm_solarpuffer",
+      "name": "Alarm_Solarpuffer",
+      "rule": "when $SolvisRemote.s1 >= 90 and $SolvisRemote.s3 >= 80 then execute \"curl -s --digest http://solvisuser:solvispass@192.168.178.61/display.bmp -o /tmp/display.bmp && echo '<img src=cid:display.bmp>' | mutt -s 'SolvisMax - Solarpuffer voll' -e 'set content_type=text/html' -a /tmp/display.bmp -- user@mail.com\"",
+      "active": true,
+      "logging": true
+    },
+
+You just need the pimatic-shell-execute plugin, mutt as mailer and curl. The example greps the display.bmp with curl from SolvisMax and send it as attachment with mutt to the given mail address.
+
+## IFrame
+
+Plugin pimatic-iframe makes it easy to get an overview of your heating system
+
+"http://solvis_ip/schema.html" shows the environment and values from your SolvisMax. No refresh needen. Zoom to 0.6 works for me.
+
+"http://solvis_ip/display.bmp" shows the current display view of your SolvisMax. Refresh to 10 seconds works for me.
