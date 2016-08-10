@@ -122,7 +122,7 @@ Here is an full example of a SolvisMax 6 with gas and solarpanels
       }
     }
 
-# Useful tipps, I think ;-)
+# Useful tips, I think ;-)
 
 ## Rules
 
