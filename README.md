@@ -21,7 +21,7 @@ It is possible to enable debugging
 
 # Device Configuration
 
-Debices must be added manually to the device section of your pimatic config.
+Devices must be added manually to the device section of your pimatic config.
 
 ## Global device configuration
 
@@ -53,7 +53,7 @@ To get the state of the solar pump add these lines:
 
 Only added values are displayed. So it is possible to build your own SolvisMax environment. All possible values are listet in device-config-schema.
 
-The "label"-attribute let your values be more readable. Best way to collect the data for your environment is to open SolvisRemote in a browser and open the
+The "label"-attribute makes your values more readable. Best way to collect the data for your environment is to open SolvisRemote in a browser and open the
 system scheme in the mobile view. Have a look at the sourcecode of the "schemam.html". Scroll down to the BODY-tag and you'll find the needed information.
 
 ## Full example
@@ -131,7 +131,7 @@ It's possible to write own alarm rules like sending a mail if solar buffer is fu
     {
       "id": "alarm_solarpuffer",
       "name": "Alarm_Solarpuffer",
-      "rule": "when $SolvisRemote.s1 >= 90 and $SolvisRemote.s3 >= 80 then execute \"curl -s --digest http://solvisuser:solvispass@192.168.178.61/display.bmp -o /tmp/display.bmp && echo '<img src=cid:display.bmp>' | mutt -s 'SolvisMax - Solarpuffer voll' -e 'set content_type=text/html' -a /tmp/display.bmp -- user@mail.com\"",
+      "rule": "when $SolvisRemote.s1 >= 90 and $SolvisRemote.s3 >= 80 then execute \"curl -s --digest http://solvis_user:solvis_pass@solvis_ip/display.bmp -o /tmp/display.bmp && echo '<img src=cid:display.bmp>' | mutt -s 'SolvisMax - Solarpuffer voll' -e 'set content_type=text/html' -a /tmp/display.bmp -- user@mail.com\"",
       "active": true,
       "logging": true
     },
@@ -142,6 +142,6 @@ You just need the pimatic-shell-execute plugin, mutt as mailer and curl. The exa
 
 Plugin pimatic-iframe makes it easy to get an overview of your heating system
 
-"http://solvis_ip/schema.html" shows the environment and values from your SolvisMax. No refresh needen. Zoom to 0.6 works for me.
+"http://solvis_ip/schema.html" shows the environment and values from your SolvisMax. No refresh needed. Zoom to 0.6 works for me.
 
 "http://solvis_ip/display.bmp" shows the current display view of your SolvisMax. Refresh to 10 seconds works for me.
